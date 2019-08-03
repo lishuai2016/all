@@ -1,0 +1,2 @@
+#提交任务  全路径  非重任务名
+./storm jar poc.jar leap.storm.fksh.TopologyFksh fksh

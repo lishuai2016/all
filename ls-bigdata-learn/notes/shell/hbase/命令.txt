@@ -1,0 +1,12 @@
+# 全表扫描
+scan "stormTable"
+#清空
+truncate "stormTable"
+#查看表结构
+describe "stormTable"
+#添加新的列族
+alter "stormTable","WCFy"
+#建表
+create "stormTable","fy1"
+#查看表列表
+list

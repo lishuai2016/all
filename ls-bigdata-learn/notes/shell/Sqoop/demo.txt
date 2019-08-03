@@ -1,0 +1,25 @@
+## 示例  导入到 hdfs
+./sqoop import --connect jdbc:mysql://172.17.201.107:3306/hive --username hive --password hive --target-dir '/hivedata' --table DBS -m 4
+
+## 导入到 hive 默认导入到 default库中
+./sqoop import --connect jdbc:mysql://172.17.201.107:3306/hive --username hive --password hive --table DBS -m 4  --hive-import
+
+## 导入到  demo库
+./sqoop import --connect jdbc:mysql://172.17.201.107:3306/hive --username hive --password hive --table DBS -m 4  --hive-import --hive-database demo
+
+## 导入hive指定表名 --hive-table xxxx
+./sqoop import --connect jdbc:mysql://172.17.201.107:3306/hive --username hive --password hive --table DBS -m 4  --hive-import --hive-database demo --hive-table dbsBak
+
+## 指定导入条件  --where 'sql' --colums 'id,name,address'
+./sqoop import --connect jdbc:mysql://172.17.201.107:3306/hive --username hive --password hive --table DBS -m 4 --hive-import --hive-database demo --hive-table dbsfitler --where "owner_type='USER'"
+
+## 根据 sql 导入  AND \$CONDITIONS --->必须有
+sqoop import --connect jdbc:mysql://172.17.201.107:3306/hive
+--username hive --password hive
+--query "select u.id,lower(u.name) , DATE_FORMAT(u.indata,'%Y/%m/%d')  from user u where u.name!='' AND \$CONDITIONS"
+--split-by u.id -m 4 --target-dir /tmp/testsqoop --hive-table newuser
+
+##########  hdfs 导出到 mysql  mysql表必须预先建好 数据类型和字段对应好
+./sqoop export --connect jdbc:mysql://172.17.201.107:3306/hive --username hive --password hive
+ -m 4 --table mysqlTable --export-dir "/hdfs/hivedata"
+

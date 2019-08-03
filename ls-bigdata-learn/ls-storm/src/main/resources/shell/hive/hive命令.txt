@@ -1,0 +1,2 @@
+ ## structs 类型 -->复合类型表
+ create table user (id int,user struct<name:string,age:int>) row format delimited fields terminated by ',' ;

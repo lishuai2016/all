@@ -1,0 +1,30 @@
+说明：这里的Hadoop版本是2.7.3
+1、打包上传到服务器上运行
+pom.xml配置,指定主类的路径
+<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+
+                    <archive>
+                        <manifest>
+                            <mainClass>WordCount</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+
+                    </archive>
+                    <classesDirectory>
+                    </classesDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+
+命令:hadoop jar xxx.jar   /input   /output
+也可以在里面写死输入输出路径
+
+2、参考连接
+http://www.cnblogs.com/yjmyzz/p/hadoop-mapreduce-2-sample.html
+参考资料：
+http://dbaplus.cn/news-21-1277-1.html

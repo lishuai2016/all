@@ -1,0 +1,11 @@
+
+
+./kafka-console-consumer.sh --zookeeper slave1.com:2181,slave2.com:2181,slave3.com:2181 --from-beginning --topic StringTopic
+./kafka-console-consumer.sh --zookeeper m1.wb.com:2181,c1.wb.com:2181,c2.wb.com:2181 --from-beginning --topic TestStringTopic
+
+./kafka-topics.sh --describe --zookeeper slave1.com:2181,slave2.com:2181,slave3.com:2181 --topic StringTopic
+
+./kafka-topics.sh --delete --zookeeper slave1.com:2181,slave2.com:2181,slave3.com:2181 --topic my-topic
+
+./kafka-topics.sh --list --zookeeper slave1.com:2181,slave2.com:2181,slave3.com:2181
+./kafka-topics.sh --list --zookeeper m1.wb.com:2181,c1.wb.com:2181,c2.wb.com:2181

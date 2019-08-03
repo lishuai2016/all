@@ -1,0 +1,21 @@
+这部分直接借用一个Storm官方示例：
+WordSpout.java从静态数组中随机读取单词并向外发射，
+WordCounterBolt接收来自WordSpout的包含一个个单词的tuple，
+对每个单词出现的次数进行统计，然后将每个单词及其对应的计数向外发射。
+
+
+
+链接：https://www.jianshu.com/p/774678cdff27
+
+
+通过添加kafkaspout来实现通过flume-》kafka数据输入
+
+
+
+处理流程：整个流程为flume监听一个端口号随机发送字符串,
+经过kafka发送给storm,storm进行切割句子为单词并且统计单词个数,并且实时存入hbase.
+
+
+具体的流程:flume sources.type采用avro模式监听端口41414，sink发送数据给kafka，
+kafka创建topic-->fkshTopic,
+storm使用自带的kafkaSpout消费消息,切割字符串,统计单词个数,存入hbase.

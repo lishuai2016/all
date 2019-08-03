@@ -1,0 +1,4 @@
+##启动flume日志监听
+flume监听
+
+bin/flume-ng agent -c ./conf/ -f conf/flume-conf.properties -Dflume.root.logger=DEBUG,console -n a1
