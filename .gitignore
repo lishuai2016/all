@@ -11,3 +11,11 @@
 /ls-distributed/springcloud/wms-api/*.iml
 /ls-distributed/springcloud/wms-service/*.iml
 /ls-distributed/springcloud/zuul-gateway/*.iml
+/ls-plugins/ls-plugins.iml
+/ls-plugins/*.iml
+/my.log
+/*.log
+/ls-articles/.settings
+/ls-articles/*.classpath
+/ls-articles/*.factorypath
+/ls-articles/*.project

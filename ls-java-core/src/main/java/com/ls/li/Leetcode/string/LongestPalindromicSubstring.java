@@ -1,0 +1,147 @@
+/**
+ * 
+ */
+package com.ls.li.Leetcode.string;
+
+/**
+ * @author lishuai
+ * @data 2016-12-14 上午8:45:07
+ */
+
+public class LongestPalindromicSubstring {
+
+	/**
+	 * @author lishuai
+	 * @data 2016-12-14 上午8:45:07
+Given a string s, find the longest palindromic substring in s. 
+You may assume that the maximum length of s is 1000.
+
+Example:
+
+Input: "babad"
+
+Output: "bab"
+
+Note: "aba" is also a valid answer.
+Example:
+
+Input: "cbbd"
+
+Output: "bb"
+	 */
+	private static int lo, maxLen;
+	public static void main(String[] args) {
+		System.out.println(longestPalindrome3("bb"));
+
+	}
+	/**
+	Key idea, every time we move to right, 
+	we only need to consider whether using this new character as tail could produce new palindrome string of length 
+	(current length +1) or (current length +2)
+	 */
+	//4 以当前字符作为回文字符的最后一个（有点抽象不太好理解）
+	 public static String longestPalindrome(String s) {
+	        String res = "";
+	        int currLength = 0;
+	        for(int i=0;i<s.length();i++){
+	            if(isPalindrome(s,i-currLength-1,i)){
+	                res = s.substring(i-currLength-1,i+1);
+	                currLength = currLength+2;
+	            }
+	            else if(isPalindrome(s,i-currLength,i)){
+	                res = s.substring(i-currLength,i+1);
+	                currLength = currLength+1;
+	            }
+	        }
+	        return res;
+	    }
+	    
+	    public static boolean isPalindrome(String s, int begin, int end){
+	        if(begin<0) return false;
+	        while(begin<end){
+	        	if(s.charAt(begin++)!=s.charAt(end--)) return false;
+	        }
+	        return true;
+	    }
+	
+	//3 思路：以每个字符为中心分别往外扩展，最后的结果分为奇数和偶数的两种情况
+	public static String longestPalindrome3(String s) {
+		int len = s.length();
+		if (len < 2)
+			return s;
+		
+	    for (int i = 0; i < len-1; i++) {
+	     	extendPalindrome(s, i, i);  //assume odd length, try to extend Palindrome as possible
+	     	extendPalindrome(s, i, i+1); //assume even length.
+	    }
+	    return s.substring(lo, lo + maxLen);
+	}
+
+	private static void extendPalindrome(String s, int j, int k) {
+		while (j >= 0 && k < s.length() && s.charAt(j) == s.charAt(k)) {
+			j--;
+			k++;
+		}
+		if (maxLen < k - j - 1) {
+			lo = j + 1;
+			maxLen = k - j - 1;
+		}
+	}
+	
+	//2 九章答案 （没理解）
+	public static String longestPalindrome2(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        
+        int length = s.length();    
+        int max = 0;
+        String result = "";
+        for(int i = 1; i <= 2 * length - 1; i++){
+            int count = 1;
+            while(i - count >= 0 && i + count <= 2 * length  && get(s, i - count) == get(s, i + count)){
+                count++;
+            }
+            count--; // there will be one extra count for the outbound #
+            if(count > max) {
+                result = s.substring((i - count) / 2, (i + count) / 2);
+                max = count;
+            }
+        }
+        
+        return result;
+    }
+    
+    private static char get(String s, int i) {
+        if(i % 2 == 0)
+            return '#';
+        else 
+            return s.charAt(i / 2);
+    }
+	
+	
+	// 1 Time Limit Exceeded
+    public static String longestPalindrome1(String s) {
+    	if (s == null || s.length() == 0) return s;
+    	int start = 0;
+    	int end = 1;
+    	int maxlength = 1;
+    	for (int i = 0;i < s.length() - 1;i++) {
+    		for (int j = i + 1;j < s.length();j++) {
+    			String temp = s.substring(i,j + 1);
+    			if (checkPalindrome(temp) && temp.length() > maxlength) {
+    				maxlength = temp.length();
+    				start = i;
+    				end = j + 1;
+    			}
+    		}
+    	}    	
+    	return s.substring(start,end);
+    }
+    public static boolean checkPalindrome(String s) {    	
+		int start = 0;
+		int end = s.length() - 1;
+		while (start < end) if (s.charAt(start++) != s.charAt(end--)) return false; 		
+		return true;
+    }
+}

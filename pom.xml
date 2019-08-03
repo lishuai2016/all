@@ -10,9 +10,16 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>mini-spring</module>
+        <module>ls-mini-spring</module>
         <module>ls-articles</module>
         <module>ls-distributed</module>
+        <module>ls-plugins</module>
+        <module>ls-distributed-tx</module>
+        <module>ls-java-learn</module>
+        <module>ls-rpc</module>
+        <module>ls-java-core</module>
+        <module>ls-project</module>
+        <module>ls-springboot2</module>
     </modules>
 
 </project>

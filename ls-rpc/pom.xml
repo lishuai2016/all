@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ls</groupId>
+    <artifactId>ls-rpc</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>ls-rpc-socket</module>
+        <module>ls-rpc-netty</module>
+        <module>ls-rpc-netty-sample</module>
+        <module>ls-rpc-netty-sample-api</module>
+        <module>ls-rpc-netty-sample-client</module>
+        <module>ls-rpc-netty-sample-server</module>
+        <module>ls-netty-learn</module>
+        <module>ls-netty-in-action</module>
+    </modules>
+
+
+</project>

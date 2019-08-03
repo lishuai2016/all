@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/showdown/1.9.0/showdown.min.js"></script>
+
+</head>
+
+<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;
+        font-size: 16px;
+        line-height: 1.42857143;
+        color: #333;
+        background-color: #fff;
+    }
+    ul li {
+        line-height: 24px;
+    }
+    blockquote {
+        border-left:#eee solid 5px;
+        padding-left:20px;
+    }
+    code {
+        color:#D34B62;
+        background: #F9F2F4;
+    }
+</style>
+
+
+<body>
+目录
+<div id="all">
+    <div id="result"></div>
+    <div id="temp"></div>
+
+</div>
+<script type="text/javascript">
+
+    $(function(){
+        var converter = new showdown.Converter();
+        var content = $("#temp").load('1.md');//加载Markdown文件
+        var html = converter.makeHtml(content);
+        $("#result").innerHTML = html;
+
+        for (var i=0;i<10;i++) {
+            add(i);
+            console.log(i)
+        }
+    });
+
+
+
+    function add(index) {
+        var addHtml = '<br/><br/><div>'+index+'</div><br/><br/>';
+        $("#all").append(addHtml);
+    }
+
+
+</script>
+
+</body>
+</html>

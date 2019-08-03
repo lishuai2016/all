@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ls</groupId>
+    <artifactId>ls-springboot2</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>springboot-01-quickstart</module>
+        <module>springboot-02-perporties</module>
+        <module>springboot-03-thymeleaf</module>
+        <module>springboot-04-swagger2</module>
+        <module>springboot-05-global-exception</module>
+        <module>springboot-06-JdbcTemplate</module>
+        <module>springboot-07-jpa</module>
+        <module>springboot-08-JdbcTemplate-multiDatasource</module>
+        <module>springboot-09-jpa-multiDatasource</module>
+        <module>springboot-10-mybatis</module>
+        <module>springboot-11-mybatis-multiDatasources</module>
+        <module>springboot-12-redis</module>
+        <module>springboot-13-MongoDB</module>
+        <module>springboot-14-log4j2</module>
+        <module>springboot-15-kafka</module>
+        <module>springboot-16-Rabbit</module>
+        <module>springboot-17-RocketMQ</module>
+        <module>springboot-18-ActiveMQ</module>
+        <module>springboot-19-dubbo</module>
+        <module>springboot-20-admin</module>
+        <module>springboot-21-quartz</module>
+        <module>springboot-20-admin-client</module>
+        <module>springboot-20-admin-server</module>
+        <module>springboot-22-Security</module>
+        <module>springboot-23-Flyway</module>
+        <module>springboot-24-cache</module>
+        <module>springboot-24-cache-Redis</module>
+        <module>springboot-25-Scheduled</module>
+        <module>springboot-26-Async</module>
+        <module>springboot-27-aop</module>
+        <module>springboot-28-email</module>
+        <module>springboot-29-elasticsearch</module>
+        <module>springboot-30-websocket</module>
+        <module>springboot-31-webflux</module>
+        <module>springboot-32-jvm</module>
+        <module>springboot-33-JMH</module>
+        <module>springboot-34-markdown</module>
+        <module>springboot-35-nutz</module>
+        <module>springboot-36-elastic-job-lite</module>
+        <module>springboot-36-elastic-job-lite-1</module>
+        <module>springboot-37-xxl-job</module>
+        <module>springboot-38-Sharding-JDBC</module>
+        <module>springboot-39-netty-socketio</module>
+        <module>springboot-40-hystrix</module>
+        <module>springboot-41-mybatis-plus</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>2.0.5.RELEASE</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>2.0.5.RELEASE</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>2.0.5.RELEASE</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+
+</project>

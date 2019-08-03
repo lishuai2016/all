@@ -1,0 +1,32 @@
+info:
+  app:
+    name: @project.name@
+    description: @project.description@
+    version: @project.version@
+    encoding: @project.build.sourceEncoding@
+    java:
+      version: @java.version@
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+#配置服务端口
+server:
+  port: 8080
+  servlet:
+    context-path: /test
+
+spring:
+    boot:
+      admin:
+        context-path: /admin
+        client:
+          url: http://127.0.0.1:8080/app-kpi-search/admin

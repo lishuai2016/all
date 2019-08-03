@@ -1,0 +1,100 @@
+2018-11-26 14:17:01
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.181-b13 mixed mode):
+
+"DestroyJavaVM" #13 prio=5 os_prio=0 tid=0x000000000254f000 nid=0x35a8 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"t2" #12 prio=5 os_prio=0 tid=0x000000005957f000 nid=0x4e30 waiting for monitor entry [0x000000005a75f000]
+   java.lang.Thread.State: BLOCKED (on object monitor)
+	at com.ls.lishuai.new1.jvm.jstack.BlockedStateBySynchronized$1.run(BlockedStateBySynchronized.java:18)
+	- waiting to lock <0x00000000d7e05178> (a java.lang.Object)
+	at java.lang.Thread.run(Thread.java:748)
+
+"t1" #11 prio=5 os_prio=0 tid=0x000000005957e000 nid=0x2298 runnable [0x000000005a62e000]
+   java.lang.Thread.State: RUNNABLE
+	at com.ls.lishuai.new1.jvm.jstack.BlockedStateBySynchronized$1.run(BlockedStateBySynchronized.java:23)
+	- locked <0x00000000d7e05178> (a java.lang.Object)
+	at java.lang.Thread.run(Thread.java:748)
+
+"Service Thread" #10 daemon prio=9 os_prio=0 tid=0x000000005946d000 nid=0x4f88 runnable [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C1 CompilerThread2" #9 daemon prio=9 os_prio=2 tid=0x00000000593fb800 nid=0x4f84 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread1" #8 daemon prio=9 os_prio=2 tid=0x00000000593f8800 nid=0x4f80 waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" #7 daemon prio=9 os_prio=2 tid=0x00000000593f7000 nid=0x4f7c waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Monitor Ctrl-Break" #6 daemon prio=5 os_prio=0 tid=0x00000000593c2800 nid=0x4f78 runnable [0x0000000059c2e000]
+   java.lang.Thread.State: RUNNABLE
+	at java.net.SocketInputStream.socketRead0(Native Method)
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+	at java.net.SocketInputStream.read(SocketInputStream.java:171)
+	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
+	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
+	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
+	- locked <0x00000000d7eb5270> (a java.io.InputStreamReader)
+	at java.io.InputStreamReader.read(InputStreamReader.java:184)
+	at java.io.BufferedReader.fill(BufferedReader.java:161)
+	at java.io.BufferedReader.readLine(BufferedReader.java:324)
+	- locked <0x00000000d7eb5270> (a java.io.InputStreamReader)
+	at java.io.BufferedReader.readLine(BufferedReader.java:389)
+	at com.intellij.rt.execution.application.AppMainV2$1.run(AppMainV2.java:64)
+
+"Attach Listener" #5 daemon prio=5 os_prio=2 tid=0x0000000057592000 nid=0x3ffc waiting on condition [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Signal Dispatcher" #4 daemon prio=9 os_prio=2 tid=0x0000000057591000 nid=0x4f2c runnable [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Finalizer" #3 daemon prio=8 os_prio=1 tid=0x000000005757e800 nid=0x4f1c in Object.wait() [0x0000000058faf000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000d7c08ed0> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+	- locked <0x00000000d7c08ed0> (a java.lang.ref.ReferenceQueue$Lock)
+	at java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:165)
+	at java.lang.ref.Finalizer$FinalizerThread.run(Finalizer.java:216)
+
+"Reference Handler" #2 daemon prio=10 os_prio=2 tid=0x0000000057537000 nid=0x4f18 in Object.wait() [0x000000005920f000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait(Native Method)
+	- waiting on <0x00000000d7c06bf8> (a java.lang.ref.Reference$Lock)
+	at java.lang.Object.wait(Object.java:502)
+	at java.lang.ref.Reference.tryHandlePending(Reference.java:191)
+	- locked <0x00000000d7c06bf8> (a java.lang.ref.Reference$Lock)
+	at java.lang.ref.Reference$ReferenceHandler.run(Reference.java:153)
+
+"VM Thread" os_prio=2 tid=0x000000005752f800 nid=0x4f14 runnable 
+
+"GC task thread#0 (ParallelGC)" os_prio=0 tid=0x000000000246f000 nid=0x4ef8 runnable 
+
+"GC task thread#1 (ParallelGC)" os_prio=0 tid=0x0000000002470800 nid=0x4dd4 runnable 
+
+"GC task thread#2 (ParallelGC)" os_prio=0 tid=0x0000000002472000 nid=0x4b20 runnable 
+
+"GC task thread#3 (ParallelGC)" os_prio=0 tid=0x0000000002474000 nid=0x4efc runnable 
+
+"VM Periodic Task Thread" os_prio=2 tid=0x00000000594ea000 nid=0x4e34 waiting on condition 
+
+JNI global references: 12
+
+分析：
+"t2" #12 prio=5 os_prio=0 tid=0x000000005957f000 nid=0x4e30 waiting for monitor entry [0x000000005a75f000]
+   java.lang.Thread.State: BLOCKED (on object monitor)
+	at com.ls.lishuai.new1.jvm.jstack.BlockedStateBySynchronized$1.run(BlockedStateBySynchronized.java:18)
+	- waiting to lock <0x00000000d7e05178> (a java.lang.Object)
+	at java.lang.Thread.run(Thread.java:748)
+
+"t1" #11 prio=5 os_prio=0 tid=0x000000005957e000 nid=0x2298 runnable [0x000000005a62e000]
+   java.lang.Thread.State: RUNNABLE
+	at com.ls.lishuai.new1.jvm.jstack.BlockedStateBySynchronized$1.run(BlockedStateBySynchronized.java:23)
+	- locked <0x00000000d7e05178> (a java.lang.Object)
+	at java.lang.Thread.run(Thread.java:748)
+	
+线程t1获得了锁然后再执行逻辑，而天t2则在等待获取锁，阻塞状态，而主线程已经结束了。
+

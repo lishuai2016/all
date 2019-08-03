@@ -1,0 +1,23 @@
+#配置服务端口
+server:
+  port: 80
+  servlet:
+    context-path: /mybatis
+
+
+
+spring:
+    datasource:
+          driver-class-name: com.mysql.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/mybatis_plus?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+          username: root
+          password:
+
+#    boot:
+#      admin:
+#        context-path: /admin
+#        client:
+#          url: http://127.0.0.1:8080/app-kpi-search/admin
+
+ls:
+  name: lishuai
