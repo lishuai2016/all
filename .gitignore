@@ -2,3 +2,12 @@
 /*.iml
 /mini-spring/*.iml
 /ls-articles/*.iml
+/ls-distributed/springcloud/credit-api/*.iml
+/ls-distributed/springcloud/credit-service/*.iml
+/ls-distributed/springcloud/eureka-server/*.iml
+/ls-distributed/springcloud/inventory-api/*.iml
+/ls-distributed/springcloud/inventory-service/*.iml
+/ls-distributed/springcloud/order-service/*.iml
+/ls-distributed/springcloud/wms-api/*.iml
+/ls-distributed/springcloud/wms-service/*.iml
+/ls-distributed/springcloud/zuul-gateway/*.iml
