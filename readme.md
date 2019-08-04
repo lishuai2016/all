@@ -44,3 +44,10 @@ java核心技术学习汇总，原来lishuai-notes中的模块
  springboot2相关学习，原来lishuai-notes中的模块
  
  [原始项目地址](https://github.com/lishuai2016/lishuai-notes)
+ 
+ - ls-bigdata-learn 
+ 
+ 大数据相关
+ 
+  [原始项目地址](https://github.com/lishuai2016/ls-bigdata-learn)
+ 

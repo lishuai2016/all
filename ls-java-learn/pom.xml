@@ -6,9 +6,12 @@
 
     <groupId>com.ls</groupId>
     <artifactId>ls-java-learn</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <modules>
         <module>ls-redis</module>
+        <module>run-main-jar</module>
     </modules>
 
 

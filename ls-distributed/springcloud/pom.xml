@@ -21,6 +21,7 @@
         <module>credit-service</module>
         <module>order-service</module>
         <module>zuul-gateway</module>
+        <module>zull-gateway-dynamics</module>
     </modules>
 
 </project>
