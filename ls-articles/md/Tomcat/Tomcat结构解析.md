@@ -1,23 +1,23 @@
----
-title: Tomcat结构解析
-categories: 
-- tomcat
-tags:
----
+Tomcat结构解析
 
 
-#Tomcat的层次结构
+
+
+# Tomcat的层次结构总结
+
 Server--->Service--->[Connector1,ConnectorN,Engine[Host[Context1，ContextN]]]
 
-<div align="center"> <img src="/images/Tomcat结构1.png"/> </div><br>
-<div align="center"> <img src="/images/Tomcat结构2.png"/> </div><br>
-<div align="center"> <img src="/images/Tomcat结构3.png"/> </div><br>
-<div align="center"> <img src="/images/Tomcat结构4.png"/> </div><br>
-<div align="center"> <img src="/images/Tomcat结构5.png"/> </div><br>
-<div align="center"> <img src="/images/Tomcat结构6.png"/> </div><br>
+- ![](../../pic/Tomcat结构1.png)
+- ![](../../pic/Tomcat结构2.png)
+- ![](../../pic/Tomcat结构3.png)
+- ![](../../pic/Tomcat结构4.png)
+- ![](../../pic/Tomcat结构5.png)
+- ![](../../pic/Tomcat结构6.png)
 
 
-##1、一个\conf\server.xml
+
+# 1、一个\conf\server.xml
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Server port="8005" shutdown="SHUTDOWN">
@@ -59,76 +59,86 @@ Server--->Service--->[Connector1,ConnectorN,Engine[Host[Context1，ContextN]]]
 
 ```
 
-从上面的配置我们中，位于配置文件顶层的是Server和Service元素，其中Server元素是整个配置文件的根元素，而Service元素则是配置服务器的核心元素。
-在Service元素内部，定义了一系列的连接器和内部容器类的组件。
+从上面的配置我们中，位于配置文件顶层的是Server和Service元素，其中Server元素是整个配置文件的根元素，而Service元素则是配置服务器的核心元素。在Service元素内部，定义了一系列的连接器和内部容器类的组件。
 
-### 1.1、Server
-<Server>元素对应的是整个Servlet容器，是整个配置的顶层元素，由org.apache.catalina.Server接口来定义，
-默认的实现类是org.apache.catalina.core.StandardServer。该元素可配置的属性主要是port和shutdown，
-分别指的是监听shutdown命令的端口和命令。在该元素中可以定义一个或多个<Service>元素，除此以外还可以定义一些全局的资源或监听器。
+## 1.1、Server
 
-### 1.2 Service
-<Service>元素由org.apache.catalina.Service接口定义，默认的实现类为org.apache.catalina.core.StandardService。
-在该元素中可以定义一个<Engine>元素、一个或多个<Connector>元素，这些<Connector>元素共享同一个<Engine>元素来进行请求的处理。
+<Server>元素对应的是整个Servlet容器，是整个配置的顶层元素，由org.apache.catalina.Server接口来定义，默认的实现类是org.apache.catalina.core.StandardServer。该元素可配置的属性主要是port和shutdown，分别指的是监听shutdown命令的端口和命令。在该元素中可以定义一个或多个<Service>元素，除此以外还可以定义一些全局的资源或监听器。
 
-### 1.3、Connector
-< Connector >元素由org.apache.catalina.connector.Connector类来定义。< Connector>是接受客户端浏览器请求并向用户最终返回响应结果的组件。
-该元素位于< Service>元素中，可以定义多个，在我们的示例中配置了两个，分别接受AJP请求和HTTP请求，在配置中，需要为其制定服务的协议和端口号。
+## 1.2 Service
 
-### 1.4 、Engine
-<Engine>元素由org.apache.catalina.Engine元素来定义，默认的实现类是org.apache.catalina.core.StandardEngine。
-<Engine>元素会用来处理<Service>中所有<Connector>接收到的请求，在<Engine>中可以定义多个<Host>元素作为虚拟主机。
-<Engine>是Tomcat配置中第一个实现org.apache.catalina.Container的接口，因此可以在其中定义一系列的子元素如<Realm>、<Valve>。
+<Service>元素由org.apache.catalina.Service接口定义，默认的实现类为org.apache.catalina.core.StandardService。在该元素中可以定义一个<Engine>元素、一个或多个<Connector>元素，这些<Connector>元素共享同一个<Engine>元素来进行请求的处理。
 
-### 1.5、Host
+## 1.3、Connector
+
+< Connector >元素由org.apache.catalina.connector.Connector类来定义。< Connector>是接受客户端浏览器请求并向用户最终返回响应结果的组件。该元素位于< Service>元素中，可以定义多个，在我们的示例中配置了两个，分别接受AJP请求和HTTP请求，在配置中，需要为其制定服务的协议和端口号。
+
+## 1.4 、Engine
+
+<Engine>元素由org.apache.catalina.Engine元素来定义，默认的实现类是org.apache.catalina.core.StandardEngine。<Engine>元素会用来处理<Service>中所有<Connector>接收到的请求，在<Engine>中可以定义多个<Host>元素作为虚拟主机。<Engine>是Tomcat配置中第一个实现org.apache.catalina.Container的接口，因此可以在其中定义一系列的子元素如<Realm>、<Valve>。
+
+## 1.5、Host
+
 <Host>元素由org.apache.catalina.Host接口来定义，默认实现为org.apache.catalina.core.StandardHost，
-该元素定义在<Engine>中，可以定义多个。每个<Host>元素定义了一个虚拟主机，它可以包含一个或多个Web应用（通过<Context>元素来进行定义）。
-因为<Host>也是容器类元素，所以可以在其中定义子元素如<Realm>、<Valve>。
+该元素定义在<Engine>中，可以定义多个。每个<Host>元素定义了一个虚拟主机，它可以包含一个或多个Web应用（通过<Context>元素来进行定义）。因为<Host>也是容器类元素，所以可以在其中定义子元素如<Realm>、<Valve>。
 
-### 1.6、Context
+## 1.6、Context
  <Context>元素由org.apache.catalina.Context接口来定义，默认实现类为org.apache.catalina.core.StandardContext。
- 该元素也许是大家用的最多的元素，在其中定义的是Web应用。一个<Host>中可以定义多个<Context>元素，分别对应不同的Web应用。
- 该元素的属性，大家经常会用到如path、reloadable等，可以在<Context>中定义子元素如<Realm>、<Valve>。
+ 该元素也许是大家用的最多的元素，在其中定义的是Web应用。一个<Host>中可以定义多个<Context>元素，分别对应不同的Web应用。该元素的属性，大家经常会用到如path、reloadable等，可以在<Context>中定义子元素如<Realm>、<Valve>。
 
 
 
-## 2、Tomcat的核心组件就两个Connector和Container
+# 2、Tomcat的核心组件就两个Connector和Container
 
 从顶层开始：
+
 - Server是Tomcat的最顶层元素，是service的集合，即可包含多个service，Server控制整个Tomcat的生命周期。
-- Service由一个Container和多个Connector组成（或者说由Connector，Engine和线程池[可选]组成），形成一个独立完整的处理单元，对外提供服务。
-一般情况下我们并不需要配置多个Service,conf/server.xml默认配置了一个“Catalina”的<Service>。
-Tomcat将Engine，Host，Context，Wrapper统一抽象成Container。
-Connector接受到请求后，会将请求交给Container，Container处理完了之后将结果返回给Connector
-Connector 组件是 Tomcat 中两个核心组件之一，它的主要任务是负责接收浏览器的发过来的 tcp 连接请求，
-创建一个 Request 和 Response 对象分别用于和请求端交换数据，然后会产生一个线程来处理这个请求并把产生的 Request 和 Response 
+
+- Service由一个Container和多个Connector组成（或者说由Connector，Engine和线程池[可选]组成），形成一个独立完整的处理单元，对外提供服务。一般情况下我们并不需要配置多个Service,conf/server.xml默认配置了一个“Catalina”的<Service>。Tomcat将Engine，Host，Context，Wrapper统一抽象成Container。
+
+Connector接受到请求后，会将请求交给Container，Container处理完了之后将结果返回给ConnectorConnector 组件是 Tomcat 中两个核心组件之一，它的主要任务是负责接收浏览器的发过来的 tcp 连接请求，创建一个 Request 和 Response 对象分别用于和请求端交换数据，然后会产生一个线程来处理这个请求并把产生的 Request 和 Response 
 对象传给处理这个请求的线程，处理这个请求的线程就是 Container 组件要做的事了。
-- Engine：没有父容器，一个 Engine代表一个完整的 Servlet 引擎，它接收来自Connector的请求，并决定传给哪个Host来处理，
-Host处理完请求后，将结果返回给Engine，Engine再将结果返回给Connector。
-- Host：Engine可以包含多个Host，每个Host代表一个虚拟主机，这个虚拟主机的作用就是运行多个应用，它负责安装和展开这些应用，
-并且标识这个应用以便能够区分它们，每个虚拟主机对应的一个域名，不同Host容器接受处理对应不同域名的请求。
+
+- Engine：没有父容器，一个 Engine代表一个完整的 Servlet 引擎，它接收来自Connector的请求，并决定传给哪个Host来处理，Host处理完请求后，将结果返回给Engine，Engine再将结果返回给Connector。
+
+- Host：Engine可以包含多个Host，每个Host代表一个虚拟主机，这个虚拟主机的作用就是运行多个应用，它负责安装和展开这些应用，并且标识这个应用以便能够区分它们，每个虚拟主机对应的一个域名，不同Host容器接受处理对应不同域名的请求。
+
 - Context：Host可以包含多个Context，Context是Servlet规范的实现，它提供了Servlet的基本环境，一个Context代表一个运行在Host上的Web应用
-- Wrapper: Context可以包含多个Wrapper, Wrapper 代表一个 Servlet，它负责管理一个 Servlet，包括的 Servlet 的装载、初始化、执行以及资源回收。
-Wrapper 是最底层的容器，它没有子容器了，所以调用它的 addChild 将会报错。
 
-## 3、Tomcat Server处理一个http请求的过程
-假设来自客户的请求为：
-http://localhost:8080/wsota/wsota_index.jsp
-1) 请求被发送到本机端口8080，被在那里侦听的CoyoteHTTP/1.1 Connector获得
-2) Connector把该请求交给它所在的Service的Engine来处理，并等待来自Engine的回应
-3) Engine获得请求localhost/wsota/wsota_index.jsp，匹配它所拥有的所有虚拟主机Host
-4) Engine匹配到名为localhost的Host（即使匹配不到也把请求交给该Host处理，因为该Host被定义为该Engine的默认主机）
-5) localhost Host获得请求/wsota/wsota_index.jsp，匹配它所拥有的所有Context
-6) Host匹配到路径为/wsota的Context（如果匹配不到就把该请求交给路径名为""的Context去处理）
-7) path="/wsota"的Context获得请求/wsota_index.jsp，在它的mapping table中寻找对应的servlet
-8) Context匹配到URLPATTERN为*.jsp的servlet，对应于JspServlet类
-9) 构造HttpServletRequest对象和HttpServletResponse对象，作为参数调用JspServlet的doGet或doPost方法
-10)Context把执行完了之后的HttpServletResponse对象返回给Host
-11)Host把HttpServletResponse对象返回给Engine
-12)Engine把HttpServletResponse对象返回给Connector
-13)Connector把HttpServletResponse对象返回给客户browser
+- Wrapper: Context可以包含多个Wrapper, Wrapper 代表一个 Servlet，它负责管理一个 Servlet，包括的 Servlet 的装载、初始化、执行以及资源回收。Wrapper 是最底层的容器，它没有子容器了，所以调用它的 addChild 将会报错。
 
-Context的部署配置文件web.xml的说明
+# 3、Tomcat Server处理一个http请求的过程
+
+假设来自客户的请求为：http://localhost:8080/wsota/wsota_index.jsp
+- 1) 请求被发送到本机端口8080，被在那里侦听的CoyoteHTTP/1.1 Connector获得
+
+- 2) Connector把该请求交给它所在的Service的Engine来处理，并等待来自Engine的回应
+
+- 3) Engine获得请求localhost/wsota/wsota_index.jsp，匹配它所拥有的所有虚拟主机Host
+
+- 4) Engine匹配到名为localhost的Host（即使匹配不到也把请求交给该Host处理，因为该Host被定义为该Engine的默认主机）
+
+- 5) localhost Host获得请求/wsota/wsota_index.jsp，匹配它所拥有的所有Context
+
+- 6) Host匹配到路径为/wsota的Context（如果匹配不到就把该请求交给路径名为""的Context去处理）
+
+- 7) path="/wsota"的Context获得请求/wsota_index.jsp，在它的mapping table中寻找对应的servlet
+
+- 8) Context匹配到URLPATTERN为*.jsp的servlet，对应于JspServlet类
+
+- 9) 构造HttpServletRequest对象和HttpServletResponse对象，作为参数调用JspServlet的doGet或doPost方法
+
+- 10) Context把执行完了之后的HttpServletResponse对象返回给Host
+
+- 11) Host把HttpServletResponse对象返回给Engine
+
+- 12) Engine把HttpServletResponse对象返回给Connector
+
+- 13) Connector把HttpServletResponse对象返回给客户browser
+
+
+> Context的部署配置文件web.xml的说明
+
 一个Context对应于一个Web App，每个Web App是由一个或者多个servlet组成的
 当一个Web App被初始化的时候，它将用自己的ClassLoader对象载入“部署配置文件web.xml”中定义的每个servlet类
 它首先载入在$CATALINA_HOME/conf/web.xml中部署的servlet类

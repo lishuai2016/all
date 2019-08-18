@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: eureka-demo
+
+
+server:
+  port: 8760
+eureka:
+  instance:
+    hostname: eureka2
+  client:
+    # 表示是否注册自身到eureka服务器
+    #registerWithEureka: false
+    # 是否从eureka上获取注册信息
+    #fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://eureka1:8761/eureka/
+  server:
+    enableSelfPreservation: false  # 自我保护，不下线服务实例

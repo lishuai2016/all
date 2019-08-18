@@ -54,6 +54,7 @@
         <module>springboot-39-netty-socketio</module>
         <module>springboot-40-hystrix</module>
         <module>springboot-41-mybatis-plus</module>
+        <module>springboot-42-tomcat</module>
     </modules>
 
     <dependencyManagement>

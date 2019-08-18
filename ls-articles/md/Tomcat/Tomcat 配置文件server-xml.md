@@ -1,50 +1,26 @@
----
-title: Tomcat 配置文件server-xml
-categories: 
-- tomcat
-tags:
----
-
-[参考](https://www.cnblogs.com/kismetv/p/7228274.html)
 
 
-详解Tomcat 配置文件server.xml
+
+
+# 参考
+
+- [详解Tomcat 配置文件server.xml](https://www.cnblogs.com/kismetv/p/7228274.html)
+
+
+
 
 # 前言
-Tomcat隶属于Apache基金会，是开源的轻量级Web应用服务器，使用非常广泛。server.xml是Tomcat中最重要的配置文件，
-server.xml的每一个元素都对应了Tomcat中的一个组件；通过对xml文件中元素的配置，可以实现对Tomcat中各个组件的控制。
-因此，学习server.xml文件的配置，对于了解和使用Tomcat至关重要。
-本文将通过实例，介绍server.xml中各个组件的配置，并详细说明Tomcat各个核心组件的作用以及各个组件之间的相互关系。
+
+Tomcat隶属于Apache基金会，是开源的轻量级Web应用服务器，使用非常广泛。server.xml是Tomcat中最重要的配置文件，server.xml的每一个元素都对应了Tomcat中的一个组件；通过对xml文件中元素的配置，可以实现对Tomcat中各个组件的控制。因此，学习server.xml文件的配置，对于了解和使用Tomcat至关重要。本文将通过实例，介绍server.xml中各个组件的配置，并详细说明Tomcat各个核心组件的作用以及各个组件之间的相互关系。
+
 说明：由于server.xml文件中元素与Tomcat中组件的对应关系，后文中为了描述方便，“元素”和“组件”的使用不严格区分。
 
 
-目录
-一、一个server.xml配置实例
-二、server.xml文档的元素分类和整体结构
-　　1、整体结构
-　　2、元素分类
-三、核心组件
-　　1、Server
-　　2、Service
-　　3、Connector
-　　4、Engine
-　　5、Host
-　　6、Context
-四、核心组件的关联
-　　1、整体关系
-　　2、如何确定请求由谁处理？
-　　3、如何配置多个服务
-五、其他组件
-　　1、Listener
-　　2、GlobalNamingResources与Realm
-　　3、Valve
-六、参考文献
-
 # 一、一个server.xml配置实例
-server.xml位于$TOMCAT_HOME/conf目录下；下面是一个server.xml实例。后文中将结合该实例讲解server.xml中，各个元素的含义和作用；
-在阅读后续章节过程中，可以对照该xml文档便于理解。
+server.xml位于$TOMCAT_HOME/conf目录下；下面是一个server.xml实例。后文中将结合该实例讲解server.xml中，各个元素的含义和作用；在阅读后续章节过程中，可以对照该xml文档便于理解。
 
-    <Server port="8005" shutdown="SHUTDOWN">
+```xml
+ <Server port="8005" shutdown="SHUTDOWN">
       <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
       <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
       <Listener className="org.apache.catalina.core.JasperListener" />
@@ -80,12 +56,16 @@ server.xml位于$TOMCAT_HOME/conf目录下；下面是一个server.xml实例。�
         </Engine>
       </Service>
     </Server>
+```
 
 # 二、server.xml文档的元素分类和整体结构
+
 ## 1、整体结构
+
 server.xml的整体结构如下：
 
-    <Server>
+```xml
+ <Server>
         <Service>
             <Connector />
             <Connector />
@@ -97,25 +77,38 @@ server.xml的整体结构如下：
         </Service>
     </Server>
 
+```
+
 该结构中只给出了Tomcat的核心组件，除了核心组件外，Tomcat还有一些其他组件，下面介绍一下组件的分类。
 
 ## 2、元素分类
+
 server.xml文件中的元素可以分为以下4类：
-（1）顶层元素：<Server>和<Service>
+
+- （1）顶层元素：<Server>和<Service>
+
 <Server>元素是整个配置文件的根元素，<Service>元素则代表一个Engine元素以及一组与之相连的Connector元素。
-（2）连接器：<Connector>
+
+- （2）连接器：<Connector>
+
 <Connector>代表了外部客户端发送请求到特定Service的接口；同时也是外部客户端从特定Service接收响应的接口。
-（3）容器：<Engine><Host><Context>
-容器的功能是处理Connector接收进来的请求，并产生相应的响应。Engine、Host和Context都是容器，但它们不是平行的关系，
-而是父子关系：Engine包含Host，Host包含Context。一个Engine组件可以处理Service中的所有请求，一个Host组件可以处理发向一个特定虚拟主机的所有请求，
-一个Context组件可以处理一个特定Web应用的所有请求。
-（4）内嵌组件：可以内嵌到容器中的组件。实际上，Server、Service、Connector、Engine、Host和Context是最重要的最核心的Tomcat组件，其他组件都可以归为内嵌组件。
+
+- （3）容器：<Engine><Host><Context>
+
+容器的功能是处理Connector接收进来的请求，并产生相应的响应。Engine、Host和Context都是容器，但它们不是平行的关系，而是父子关系：Engine包含Host，Host包含Context。一个Engine组件可以处理Service中的所有请求，一个Host组件可以处理发向一个特定虚拟主机的所有请求，一个Context组件可以处理一个特定Web应用的所有请求。
+
+- （4）内嵌组件：可以内嵌到容器中的组件。
+
+实际上，Server、Service、Connector、Engine、Host和Context是最重要的最核心的Tomcat组件，其他组件都可以归为内嵌组件。
+
 下面将详细介绍Tomcat中各个核心组件的作用，以及相互之间的关系。
 
 ## 三、核心组件
+
 本部分将分别介绍各个核心组件的作用、特点以及配置方式等。
 
 ### 1、Server
+
 Server元素在最顶层，代表整个Tomcat容器，因此它必须是server.xml中唯一一个最外层的元素。一个Server元素中可以有一个或多个Service元素。
 在第一部分的例子中，在最外层有一个<Server>元素，
 shutdown属性表示关闭Server的指令；
@@ -124,11 +117,13 @@ Server的主要任务，就是提供一个接口让客户端能够访问到这�
 包括如何初始化、如何结束服务、如何找到客户端要访问的Service。
 
 ### 2、Service
+
 Service的作用，是在Connector和Engine外面包了一层，把它们组装在一起，对外提供服务。一个Service可以包含多个Connector，但是只能包含一个Engine；
 其中Connector的作用是从客户端接收请求，Engine的作用是处理接收进来的请求。
 在第一部分的例子中，Server中包含一个名称为“Catalina”的Service。实际上，Tomcat可以提供多个Service，不同的Service监听不同的端口，后文会有介绍。
 
 ### 3、Connector
+
 Connector的主要功能，是接收连接请求，创建Request和Response对象用于和请求端交换数据；然后分配线程让Engine来处理这个请求，
 并把产生的Request和Response对象传给Engine。
 通过配置Connector，可以控制请求Service的协议及端口号。在第一部分的例子中，Service包含两个Connector：
@@ -149,6 +144,7 @@ Connector的主要功能，是接收连接请求，创建Request和Response对�
 
 
 ### 4、Engine
+
 Engine组件在Service组件中有且只有一个；Engine是Service组件中的请求处理组件。Engine组件从一个或多个Connector中接收请求并处理，
 并将完成的响应返回给Connector，最终传递给客户端。
 前面已经提到过，Engine、Host和Context都是容器，但它们不是平行的关系，而是父子关系：Engine包含Host，Host包含Context。
@@ -159,11 +155,14 @@ Engine组件在Service组件中有且只有一个；Engine是Service组件中的
 一律使用defaultHost指定的host进行处理；因此，defaultHost的值，必须与Engine中的一个Host组件的name属性值匹配。
 
 ### 5、Host
+
 （1）Engine与Host
+
 Host是Engine的子容器。Engine组件中可以内嵌1个或多个Host组件，每个Host组件代表Engine中的一个虚拟主机。Host组件至少有一个，
 且其中一个的name必须与Engine组件的defaultHost属性相匹配。
 
 （2）Host的作用
+
 Host虚拟主机的作用，是运行多个Web应用（一个Context代表一个Web应用），并负责安装、展开、启动和结束每个Web应用。
 Host组件代表的虚拟主机，对应了服务器中一个网络名实体(如”www.test.com”，或IP地址”116.25.25.25”)；
 为了使用户可以通过网络名连接Tomcat服务器，这个名字应该在DNS服务器上注册。
@@ -171,6 +170,7 @@ Host组件代表的虚拟主机，对应了服务器中一个网络名实体(如
 如果没有匹配，请求将发送至默认主机。因此默认主机不需要是在DNS服务器中注册的网络名，因为任何与所有Host名称不匹配的请求，都会路由至默认主机。
 
 （3）Host的配置
+
 在第一部分的例子中，Host的配置如下：
 <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
 
@@ -182,7 +182,9 @@ Host的autoDeploy和appBase属性，与Host内Web应用的自动部署有关；�
 也与Web应用的自动部署有关；将在下一节(Context)中介绍。
 
 ### 6、Context
+
 （1）Context的作用
+
 Context元素代表在特定虚拟主机上运行的一个Web应用。在后文中，提到Context、应用或Web应用，它们指代的都是Web应用。
 每个Web应用基于WAR文件，或WAR文件解压后对应的目录（这里称为应用目录）。
 Context是Host的子容器，每个Host中可以定义任意多的Context元素。
@@ -190,6 +192,7 @@ Context是Host的子容器，每个Host中可以定义任意多的Context元素�
 Web应用没有在server.xml中配置静态部署，而是由Tomcat通过特定的规则自动部署。下面介绍一下Tomcat自动部署Web应用的机制。
 
 （2）Web应用自动部署
+
 [Host的配置]
 要开启Web应用的自动部署，需要配置所在的虚拟主机；配置的方式就是前面提到的Host元素的deployOnStartup和autoDeploy属性。
 如果deployOnStartup和autoDeploy设置为true，则tomcat启动自动部署：当检测到新的Web应用或Web应用的更新时，会触发应用的部署(或重新部署)。

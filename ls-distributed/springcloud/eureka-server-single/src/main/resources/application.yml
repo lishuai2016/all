@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: eureka-demo
+
+server:
+  port: 8761
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  server:
+    enableSelfPreservation: false  # 自我保护，不下线服务实例

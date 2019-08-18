@@ -13,6 +13,7 @@
 
     <modules>
         <module>eureka-server</module>
+        <module>eureka-server2</module>
         <module>wms-api</module>
         <module>wms-service</module>
         <module>inventory-api</module>
@@ -22,6 +23,11 @@
         <module>order-service</module>
         <module>zuul-gateway</module>
         <module>zull-gateway-dynamics</module>
+        <module>zuul-gateway-gray-release</module>
+
+        <module>eureka-server-single</module>
+        <module>service1</module>
+        <module>service2</module>
     </modules>
 
 </project>

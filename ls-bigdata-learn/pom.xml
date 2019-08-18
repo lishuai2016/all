@@ -45,6 +45,8 @@
         <module>ls-kafka</module>
         <module>ls-elasticsearch</module>
         <module>ls-redis</module>
+        <module>ls-hdfs</module>
+        <module>ls-hive-jdbc</module>
     </modules>
 
 

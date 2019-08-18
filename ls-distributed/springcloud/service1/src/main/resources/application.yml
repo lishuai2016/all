@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: order-service
+
+eureka:
+  instance:
+    hostname: localhost
+    metadata-map:
+      version: new
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka

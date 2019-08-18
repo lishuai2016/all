@@ -1,716 +1,49 @@
 
 
+<!-- TOC -->
 
+- [84_hystrix与高可用系统架构：资源隔离+限流+熔断+降级+运维监控](#84_hystrix与高可用系统架构资源隔离限流熔断降级运维监控)
+- [85_hystrix要解决的分布式系统可用性问题以及其设计原则](#85_hystrix要解决的分布式系统可用性问题以及其设计原则)
+- [86_电商网站的商品详情页缓存服务业务背景以及框架结构说明](#86_电商网站的商品详情页缓存服务业务背景以及框架结构说明)
+- [87_基于spring boot快速构建缓存服务以及商品服务](#87_基于spring-boot快速构建缓存服务以及商品服务)
+- [88_快速完成缓存服务接收数据变更消息以及调用商品服务接口的代码编写](#88_快速完成缓存服务接收数据变更消息以及调用商品服务接口的代码编写)
+- [89_商品服务接口故障导致的高并发访问耗尽缓存服务资源的场景分析](#89_商品服务接口故障导致的高并发访问耗尽缓存服务资源的场景分析)
+- [90_基于hystrix的线程池隔离技术进行商品服务接口的资源隔离以及限流](#90_基于hystrix的线程池隔离技术进行商品服务接口的资源隔离以及限流)
+- [91_基于hystrix的信号量技术对地理位置获取逻辑进行资源隔离与限流](#91_基于hystrix的信号量技术对地理位置获取逻辑进行资源隔离与限流)
+- [92_hystrix的线程池+服务+接口划分以及资源池的容量大小控制](#92_hystrix的线程池服务接口划分以及资源池的容量大小控制)
+- [93_深入分析hystrix执行时的8大流程步骤以及内部原理](#93_深入分析hystrix执行时的8大流程步骤以及内部原理)
+- [94_基于request cache请求缓存技术优化批量商品数据查询接口](#94_基于request-cache请求缓存技术优化批量商品数据查询接口)
+- [95_开发品牌名称获取接口的基于本地缓存的fallback降级机制](#95_开发品牌名称获取接口的基于本地缓存的fallback降级机制)
+- [96_深入理解hystrix的短路器原理以及接口异常时的熔断实验](#96_深入理解hystrix的短路器原理以及接口异常时的熔断实验)
+- [97_深入理解线程池隔离技术的设计原则以及动手实战接口限流实验](#97_深入理解线程池隔离技术的设计原则以及动手实战接口限流实验)
+- [98_基于timeout机制来为商品服务接口的调用超时提供安全保护](#98_基于timeout机制来为商品服务接口的调用超时提供安全保护)
+- [99_基于hystrix的高可用分布式系统架构项目实战课程的总结](#99_基于hystrix的高可用分布式系统架构项目实战课程的总结)
 
+<!-- /TOC -->
 
 
+[84-91小节内容](../专题/高可用-00-hystrix构建高可用的服务的架构.md)
 
 
 
+=========================================================================
 
 
+# 84_hystrix与高可用系统架构：资源隔离+限流+熔断+降级+运维监控
+# 85_hystrix要解决的分布式系统可用性问题以及其设计原则
+# 86_电商网站的商品详情页缓存服务业务背景以及框架结构说明
+# 87_基于spring boot快速构建缓存服务以及商品服务
+# 88_快速完成缓存服务接收数据变更消息以及调用商品服务接口的代码编写
+# 89_商品服务接口故障导致的高并发访问耗尽缓存服务资源的场景分析
+# 90_基于hystrix的线程池隔离技术进行商品服务接口的资源隔离以及限流
+# 91_基于hystrix的信号量技术对地理位置获取逻辑进行资源隔离与限流
 
 
+===========================================================================
 
+# 92_hystrix的线程池+服务+接口划分以及资源池的容量大小控制
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-### 04_电商网站的商品详情页缓存服务业务背景以及框架结构说明
-
-我们这个课程，基于hystrix，如何来构建高可用的分布式系统的架构，项目实战
-
-模拟真实业务的这么一个小型的项目，来全程贯穿，用这个项目中的业务场景去一个一个的讲解hystrix高可用的每个技术
-
-纯讲hystrix，脱离实际的业务背景，听起来有点枯燥，大家学完了hystrix以后，可能没法完全感受到技术是如何融入我们的项目中的
-
-大背景：电商网站，首页，商品详情页，搜索结果页，广告页，促销活动，购物车，订单系统，库存系统，物流系统
-
-小背景：商品详情页，如何用最快的结果将商品数据填充到一个页面中，然后将页面显示出来
-
-分布式系统：商品详情页，缓存服务，+底层源数据服务，商品信息服务，店铺信息服务，广告信息服务，推荐信息服务，综合起来组成一个分布式的系统
-
-1、电商网站的商品详情页系统架构
-
-（1）小型电商网站的商品详情页系统架构（不是我们要讲解的）
-
-（2）大型电商网站的商品详情页系统架构
-
-（3）页面模板
-
-举个例子
-
-将数据动态填充/渲染到一个html模板中，是什么意思呢？
-
-<html>
-	<title>#{name}的页面</title>
-	<body>
-		商品的价格是：#{price}
-		商品的介绍：#{description}
-	</body>
-</html>
-
-上面这个就可以认为是一个页面模板，里面的很多内容是不确定的，#{name}，#{price}，#{description}，这都是一些模板脚本，不确定里面的值是什么？
-
-将数据填充/渲染到html模板中，是什么意思呢？
-
-{
-	"name": "iphone7 plus（玫瑰金+32G）",
-	"price": 5599.50
-	"description": "这个手机特别好用。。。。。。"
-}
-
-<html>
-	<title>iphone7 plus（玫瑰金+32G）的页面</title>
-	<body>
-		商品的价格是：5599.50
-		商品的介绍：这个手机特别好用。。。。。。
-	</body>
-</html>
-
-上面这个就是一份填充好数据的一个html页面
-
-2、缓存服务
-
-缓存服务，订阅一个MQ的消息变更，如果有消息变更的话，那么就会发送一个网络请求，调用一个底层的对应的源数据服务的接口，去获取变更后的数据
-
-将获取到的变更后的数据填充到分布式的redis缓存中去
-
-高可用这一块儿，最可能出现说可用性不高的情况，是什么呢？就是说，在接收到消息之后，可能在调用各种底层依赖服务的接口时，会遇到各种不稳定的情况
-
-比如底层服务的接口调用超时，200ms，2s都没有返回; 底层服务的接口调用失败，比如说卡了500ms之后，返回一个报错
-
-在分布式系统中，对于这种大量的底层依赖服务的调用，就可能会出现各种可用性的问题，一旦没有处理好的话
-
-可能就会导致缓存服务自己本身会挂掉，或者故障掉，就会导致什么呢？不可以对外提供服务，严重情况下，甚至会导致说整个商品详情页显示不出来
-
-缓存服务接收到变更消息后，去调用各个底层依赖服务时的高可用架构的实现
-
-我们刚才讲解的整套大型电商网站的商品详情页的缓存架构，完整的那个流程，《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-3、框架结构
-
-围绕着缓存服务去拉取各种底层的源数据服务的数据，调用其接口时，可能出现的系统不可用的问题
-
-从简
-
-spring boot，微服务的非常快速，非常好用的技术框架，脱胎于spring，具体的东西就不讲解，直接带着大家上手搭建一个spring boot的框架
-
-2个服务，缓存服务，商品服务，缓存服务依赖于商品服务
-
-模拟各种商品服务可能接口调用时出现的各种问题，导致系统不可用的场景，然后用hystrix完整的各种技术点全部贯穿在里面
-
-解决了一大堆设计业务背景下的系统不可用问题，hystrix整个技术体系，知识体系，也就讲解完了
-
-消息队列，redis，咱们都不搞了
-
-分布式系统，微服务，dubbo，不用dubbo，目前比较明显的一个趋势是，行业里，未来主要还是spring boot，spring cloud，主流的开源技术，去构建微服务的分布式系统
-
-基于dubbo，官方很久之前就停止更新了，支持也不是太好
-
-spring boot + http client + hystrix
-
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-### 05_基于spring boot快速构建缓存服务以及商品服务
-
-
-1、pom.xml
-
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.2.5.RELEASE</version>
-</parent>
-
-<properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<java.version>1.8</java.version>
-</properties>
-
-<dependencies>
-	<dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.mybatis</groupId>
-        <artifactId>mybatis-spring</artifactId>
-        <version>1.2.2</version>
-    </dependency>
-    <dependency>
-        <groupId>org.mybatis</groupId>
-        <artifactId>mybatis</artifactId>
-        <version>3.2.8</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-jdbc</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>com.alibaba</groupId>
-        <artifactId>fastjson</artifactId>
-        <version>1.1.43</version>
-    </dependency>
-</dependencies>
-	
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-</build>
-
-<repositories>
-    <repository>
-        <id>spring-milestone</id>
-        <url>https://repo.spring.io/libs-release</url>
-    </repository>
-</repositories>
-
-<pluginRepositories>
-    <pluginRepository>
-        <id>spring-milestone</id>
-        <url>https://repo.spring.io/libs-release</url>
-    </pluginRepository>
-</pluginRepositories>
-
-你实际在你本地去搭建这个工程的时候，你首先就会发现说，你一修改这个pom.xml，发现下载各种spring boot依赖包，下载巨慢巨慢
-
-北京，宽带，100M，联通，还是下载的巨慢
-
-手工下载依赖，并安装到本地maven仓库
-
-（1）在maven中央仓库搜索jar包，如果没有找到，就得手动在百度里面找，下载jar下来
-（2）根据jar对应的group id，artifact id，找到自己本地的maven仓库，对应的目录，将jar包拷贝到那个目录里面去
-
-jmxtool，groupId=com.sun.jdmk，artifactId=jmxtools，version=1.2.1
-com\sun\jdmk\jmxtools\1.2.1
-
-（3）手工执行mvn install:install-file的命令，在本地仓库中安装这个依赖
-
-mvn install:install-file -Dfile=E:\apache-maven-3.0.5\mvn_repo\com\sun\jdmk\jmxtools\1.2.1\jmxtools-1.2.1.jar -DgroupId=com.sun.jdmk -DartifactId=jmxtools -Dversion=1.2.1 -Dpackaging=jar
-
-（4）强制kill掉你的eclipse
-
-（5）重新再进入eclips，这个时候肯定是会报很多的错误的，重新加载maven依赖
-
-（6）反复循环，手工下载了，十几个到二十个依赖，然后最终所有的依赖全部成功下载到了本地，工程部报错
-
-2、配置文件（src/main/resources）
-
-Application.properties
-
-server.port=8081
-spring.datasource.url=jdbc:mysql://192.168.31.85:3306/eshop
-spring.datasource.username=eshop
-spring.datasource.password=eshop
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver
-
-说明：我已经在一个虚拟机中，安装好了一个mysql数据库，大家需要自己在自己本地安装一个mysql，配置好对应的url连接串，还有对应的用户名和密码就可以了
-
-怎么安装mysql，大家自己网上查一下吧，java工程师，大学的学生，自己在本地安装一个mysql还是可以搞定的吧
-
-mybatis/UserMappper.xml
-
-templates/hello.html
-
-3、Application
-
-@EnableAutoConfiguration
-@SpringBootApplication
-@ComponentScan
-@MapperScan("com.roncoo.eshop.cache.mapper")
-public class Application {
- 
-    @Bean
-    @ConfigurationProperties(prefix="spring.datasource")
-    public DataSource dataSource() {
-        return new org.apache.tomcat.jdbc.pool.DataSource();
-    }
-    
-    @Bean
-    public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
-        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
-        sqlSessionFactoryBean.setDataSource(dataSource());
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
-        return sqlSessionFactoryBean.getObject();
-    }
- 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource());
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-    
-}
-
-4、HelloController
-
-5、完成两个服务的构建
-
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-### 06_快速完成缓存服务接收数据变更消息以及调用商品服务接口的代码编写
-
-快速将核心的功能流程，用代码来实现
-
-从下一讲开始，然后我们其实就针对这里面的一些东西，来给大家讲解哪些地方可能会有可用性的问题，如何用hystrix来解决这些可用性的问题
-
-1、接收数据变更的消息，订阅一个MQ的topic，但是我们这里就简化一下，采取提供一个http接口
-
-2、往http接口发送一条消息，就认为是通知缓存服务，有一个商品的数据变更了
-
-<dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>httpclient</artifactId>
-	<version>4.4</version>
-</dependency>
-
-/**
- * HttpClient工具类
- * @author lixuerui
- *
- */
-@SuppressWarnings("deprecation")
-public class HttpClientUtils {
-	
-	/**
-	 * 发送GET请求
-	 * @param url 请求URL
-	 * @return 响应结果
-	 */
-	@SuppressWarnings("resource")
-	public static String sendGetRequest(String url) {
-		String httpResponse = null;
-		
-		HttpClient httpclient = null;
-		InputStream is = null;
-		BufferedReader br = null;
-		
-		try {
-			// 发送GET请求
-			httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(url);  
-			HttpResponse response = httpclient.execute(httpget);
-			
-			// 处理响应
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				is = entity.getContent();
-				br = new BufferedReader(new InputStreamReader(is));      
-				
-		        StringBuffer buffer = new StringBuffer("");       
-		        String line = null;   
-		        
-		        while ((line = br.readLine()) != null) {  
-		        		buffer.append(line + "\n");      
-	            }  
-	    
-		        httpResponse = buffer.toString();      
-			}
-		} catch (Exception e) {  
-			e.printStackTrace();  
-		} finally {
-			try {
-				if(br != null) {
-					br.close();
-				}
-				if(is != null) {
-					is.close();
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();  
-			}
-		}
-		  
-		return httpResponse;
-	}
-	
-	/**
-	 * 发送post请求
-	 * @param url URL
-	 * @param map 参数Map
-	 * @return
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked", "resource" })
-	public static String sendPostRequest(String url, Map<String,String> map){  
-		HttpClient httpClient = null;  
-        HttpPost httpPost = null;  
-        String result = null;  
-        
-        try{  
-            httpClient = new DefaultHttpClient();  
-            httpPost = new HttpPost(url);  
-            
-            //设置参数  
-            List<NameValuePair> list = new ArrayList<NameValuePair>();  
-            Iterator iterator = map.entrySet().iterator();  
-            while(iterator.hasNext()){  
-                Entry<String,String> elem = (Entry<String, String>) iterator.next();  
-                list.add(new BasicNameValuePair(elem.getKey(), elem.getValue()));  
-            }  
-            if(list.size() > 0){  
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, "utf-8");    
-                httpPost.setEntity(entity);  
-            }  
-            
-            HttpResponse response = httpClient.execute(httpPost);  
-            if(response != null){  
-                HttpEntity resEntity = response.getEntity();  
-                if(resEntity != null){  
-                    result = EntityUtils.toString(resEntity, "utf-8");    
-                }  
-            }  
-        } catch(Exception ex){  
-            ex.printStackTrace();  
-        } finally {
-        	
-        }
-        
-        return result;  
-    }  
-	
-}
-
-3、缓存服务接收到这条消息之后，就会去通过http调用商品服务的一个接口，获取到商品变更后的最新数据
-
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-### 07_商品服务接口故障导致的高并发访问耗尽缓存服务资源的场景分析
-
-1、商品服务接口调用故障，导致缓存服务资源耗尽
-
-2、hystrix针对一个一个的具体的业务场景，去开发高可用的架构
-
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-### 08_基于hystrix的线程池隔离技术进行商品服务接口的资源隔离
-
-1、pom.xml
-
-<dependency>
-    <groupId>com.netflix.hystrix</groupId>
-    <artifactId>hystrix-core</artifactId>
-    <version>1.5.12</version>
-</dependency>
-
-2、将商品服务接口调用的逻辑进行封装
-
-hystrix进行资源隔离，其实是提供了一个抽象，叫做command，就是说，你如果要把对某一个依赖服务的所有调用请求，全部隔离在同一份资源池内
-
-对这个依赖服务的所有调用请求，全部走这个资源池内的资源，不会去用其他的资源了，这个就叫做资源隔离
-
-hystrix最最基本的资源隔离的技术，线程池隔离技术
-
-对某一个依赖服务，商品服务，所有的调用请求，全部隔离到一个线程池内，对商品服务的每次调用请求都封装在一个command里面
-
-每个command（每次服务调用请求）都是使用线程池内的一个线程去执行的
-
-所以哪怕是对这个依赖服务，商品服务，现在同时发起的调用量已经到了1000了，但是线程池内就10个线程，最多就只会用这10个线程去执行
-
-不会说，对商品服务的请求，因为接口调用延迟，将tomcat内部所有的线程资源全部耗尽，不会出现了
-
-public class CommandHelloWorld extends HystrixCommand<String> {
-
-    private final String name;
-
-    public CommandHelloWorld(String name) {
-        super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
-        this.name = name;
-    }
-
-    @Override
-    protected String run() {
-        return "Hello " + name + "!";
-    }
-
-}
-
-不让超出这个量的请求去执行了，保护说，不要因为某一个依赖服务的故障，导致耗尽了缓存服务中的所有的线程资源去执行
-
-3、开发一个支持批量商品变更的接口
-
-HystrixCommand：是用来获取一条数据的
-HystrixObservableCommand：是设计用来获取多条数据的
-
-public class ObservableCommandHelloWorld extends HystrixObservableCommand<String> {
-
-    private final String name;
-
-    public ObservableCommandHelloWorld(String name) {
-        super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
-        this.name = name;
-    }
-
-    @Override
-    protected Observable<String> construct() {
-        return Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> observer) {
-                try {
-                    if (!observer.isUnsubscribed()) {
-                        observer.onNext("Hello " + name + "!");
-                        observer.onNext("Hi " + name + "!");
-                        observer.onCompleted();
-                    }
-                } catch (Exception e) {
-                    observer.onError(e);
-                }
-            }
-         } ).subscribeOn(Schedulers.io());
-    }
-}
-
-4、command的四种调用方式
-
-同步：new CommandHelloWorld("World").execute()，new ObservableCommandHelloWorld("World").toBlocking().toFuture().get()
-
-如果你认为observable command只会返回一条数据，那么可以调用上面的模式，去同步执行，返回一条数据
-
-异步：new CommandHelloWorld("World").queue()，new ObservableCommandHelloWorld("World").toBlocking().toFuture()
-
-对command调用queue()，仅仅将command放入线程池的一个等待队列，就立即返回，拿到一个Future对象，后面可以做一些其他的事情，然后过一段时间对future调用get()方法获取数据
-
-// observe()：hot，已经执行过了
-// toObservable(): cold，还没执行过
-
-Observable<String> fWorld = new CommandHelloWorld("World").observe();
-
-assertEquals("Hello World!", fWorld.toBlocking().single());
-
-fWorld.subscribe(new Observer<String>() {
-
-    @Override
-    public void onCompleted() {
-
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        e.printStackTrace();
-    }
-
-    @Override
-    public void onNext(String v) {
-        System.out.println("onNext: " + v);
-    }
-
-});
-
-Observable<String> fWorld = new ObservableCommandHelloWorld("World").toObservable();
-
-assertEquals("Hello World!", fWorld.toBlocking().single());
-
-fWorld.subscribe(new Observer<String>() {
-
-    @Override
-    public void onCompleted() {
-
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        e.printStackTrace();
-    }
-
-    @Override
-    public void onNext(String v) {
-        System.out.println("onNext: " + v);
-    }
-
-});
-
-5、如何解决刚才的问题
-
-画图讲解资源隔离后的效果
-
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-### 09_基于hystrix的信号量技术对地理位置获取逻辑进行资源隔离与限流
-
-1、线程池隔离技术与信号量隔离技术的区别
-
-hystrix里面，核心的一项功能，其实就是所谓的资源隔离，要解决的最最核心的问题，就是将多个依赖服务的调用分别隔离到各自自己的资源池内
-
-避免说对某一个依赖服务的调用，因为依赖服务的接口调用的延迟或者失败，导致服务所有的线程资源全部耗费在这个服务的接口调用上
-
-一旦说某个服务的线程资源全部耗尽的话，可能就导致服务就会崩溃，甚至说这种故障会不断蔓延
-
-hystrix，资源隔离，两种技术，线程池的资源隔离，信号量的资源隔离
-
-信号量，semaphore
-
-信号量跟线程池，两种资源隔离的技术，区别到底在哪儿呢？
-
-2、线程池隔离技术和信号量隔离技术，分别在什么样的场景下去使用呢？？
-
-线程池：适合绝大多数的场景，99%的，线程池，对依赖服务的网络请求的调用和访问，timeout这种问题
-
-信号量：适合，你的访问不是对外部依赖的访问，而是对内部的一些比较复杂的业务逻辑的访问，但是像这种访问，系统内部的代码，其实不涉及任何的网络请求，那么只要做信号量的普通限流就可以了，因为不需要去捕获timeout类似的问题，算法+数据结构的效率不是太高，并发量突然太高，因为这里稍微耗时一些，导致很多线程卡在这里的话，不太好，所以进行一个基本的资源隔离和访问，避免内部复杂的低效率的代码，导致大量的线程被hang住
-
-3、在代码中加入从本地内存获取地理位置数据的逻辑
-
-业务背景里面， 比较适合信号量的是什么场景呢？
-
-比如说，我们一般来说，缓存服务，可能会将部分量特别少，访问又特别频繁的一些数据，放在自己的纯内存中
-
-一般我们在获取到商品数据之后，都要去获取商品是属于哪个地理位置，省，市，卖家的，可能在自己的纯内存中，比如就一个Map去获取
-
-对于这种直接访问本地内存的逻辑，比较适合用信号量做一下简单的隔离
-
-优点在于，不用自己管理线程池拉，不用care timeout超时了，信号量做隔离的话，性能会相对来说高一些
-
-4、采用信号量技术对地理位置获取逻辑进行资源隔离与限流
-
-super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"))
-        .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-               .withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)));
-
-
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-### 10_hystrix的线程池+服务+接口划分以及资源池的容量大小控制
+![线程池+queue的工作原理](../../pic/2019-08-19-00-01-25.png)
 
 
 资源隔离，两种策略，线程池隔离，信号量隔离
@@ -852,26 +185,15 @@ HystrixCommandProperties.Setter()
 
 
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
 
 
-### 11_深入分析hystrix执行时的8大流程步骤以及内部原理
+
+
+# 93_深入分析hystrix执行时的8大流程步骤以及内部原理
+
+
+![hystrix执行时的8大流程以及内部原理](../../pic/2019-08-19-00-02-02.png)
+
 
 之前几讲，我们用实际的业务背景给了一些可用性的问题
 
@@ -996,30 +318,12 @@ toObservable()，返回一个原始的Observable，必须手动订阅才会去�
 
 
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
 
 
 
 
+# 94_基于request cache请求缓存技术优化批量商品数据查询接口
 
-
-### 12_基于request cache请求缓存技术优化批量商品数据查询接口
 
 
 我们上一讲讲解的那个图片，顺着那个图片的流程，来一个一个的讲解hystrix的核心技术
@@ -1201,26 +505,11 @@ public static class SetterCommand extends HystrixCommand<Void> {
     }
 }
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
 
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
+![request cache的原理](../../pic/2019-08-19-00-02-47.png)
 
 
-### 13_开发品牌名称获取接口的基于本地缓存的fallback降级机制
+# 95_开发品牌名称获取接口的基于本地缓存的fallback降级机制
 
 
 1、创建command
@@ -1299,26 +588,13 @@ HystrixObservableCommand，是实现resumeWithFallback方法
 HystrixCommandProperties.Setter()
    .withFallbackIsolationSemaphoreMaxConcurrentRequests(int value)
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
 
 
-### 14_深入理解hystrix的短路器执行原理以及模拟接口异常时的短路实验
+
+
+
+# 96_深入理解hystrix的短路器原理以及接口异常时的熔断实验
+
 
 短路器深入的工作原理
 
@@ -1392,26 +668,9 @@ HystrixCommandProperties.Setter()
 
 写一个client测试程序，写入50个请求，前20个是正常的，但是后30个是productId=-1，然后继续请求，会发现
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
 
 
-### 15_深入理解线程池隔离技术的设计原则以及动手实战接口限流实验
+# 97_深入理解线程池隔离技术的设计原则以及动手实战接口限流实验
 
 
 1、command的创建和执行：资源隔离
@@ -1518,26 +777,11 @@ queue大小，等待队列的大小，timeout时长
 withExecutionTimeoutInMilliseconds(20000)：timeout也设置大一些，否则如果请求放等待队列中时间太长了，直接就会timeout，等不到去线程池里执行了
 withFallbackIsolationSemaphoreMaxConcurrentRequests(30)：fallback，sempahore限流，30个，避免太多的请求同时调用fallback被拒绝访问
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
 
 
-### 16_基于timeout机制来为商品服务接口的调用超时提供安全保护
+# 98_基于timeout机制来为商品服务接口的调用超时提供安全保护
+
+
 
 一般来说，在调用依赖服务的接口的时候，比较常见的一个问题，就是超时
 
@@ -1575,28 +819,8 @@ HystrixCommandProperties.Setter()
 
 让一个command执行timeout，然后看是否会调用fallback降级
 
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
 
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、架构性能优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-
-### 17_基于hystrix的高可用分布式系统架构项目实战课程的总结
-
+# 99_基于hystrix的高可用分布式系统架构项目实战课程的总结
 
 
 
@@ -1631,53 +855,6 @@ hystrix的高阶知识
 9、hystrix的metric高阶配置
 10、基于hystrix dashboard的可视化分布式系统监控
 11、生产环境中的hystrix工程运维经验
-
-《亿级流量电商详情页系统的大型高并发与高可用缓存架构实战》
-
-1、亿级流量的电商网站的商品详情页系统架构
-2、大型的企业级缓存架构，支撑高并发与高可用
-3、几十万QPS的高并发+99.99%高可用+1T以上的海量数据+绝对数据安全的redis集群架构
-4、高并发场景下的数据库+缓存双写一致性保障方案
-5、大缓存的维度化拆分方案
-6、基于双层nginx部署架构的缓存命中率提升方案
-7、基于kafka+spring boot+ehcache+redis+nginx+lua的多级缓存架构
-8、基于zookeeper的缓存并发更新安全保障方案
-9、基于storm+zookeeper的大规模缓存预热解决方案
-10、基于storm+zookeeper+nginx+lua的热点缓存自动降级与恢复解决方案
-11、基于hystrix的高可用缓存服务架构
-12、hystrix的进阶高可用架构方案、配置优化以及监控运维
-13、基于hystrix的大规模缓存雪崩解决方案
-14、高并发场景下的缓存穿透解决方案
-15、高并发场景下的缓存失效解决方案
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,7 +1,11 @@
 package com.roncoo.eshop.cache.ha.degrade;
 
+
+
+//封装降级标识
+
 public class IsDegrade {
-	
+
 	private static boolean degrade = false;
 
 	public static boolean isDegrade() {
@@ -11,5 +15,5 @@ public class IsDegrade {
 	public static void setDegrade(boolean degrade) {
 		IsDegrade.degrade = degrade;
 	}
-	
+
 }
